@@ -12,6 +12,9 @@ class ViewController: UITableViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        title = "Whitehouse Petitions"
+        navigationController?.navigationBar.prefersLargeTitles = true
+        
         loadData()
     }
 

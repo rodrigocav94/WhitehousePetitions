@@ -21,14 +21,23 @@ class DetailViewController: UIViewController {
         super.viewDidLoad()
         
         guard let detailItem else { return }
+        
+        title = detailItem.title
+        navigationItem.largeTitleDisplayMode = .never
+        
         let html = """
         <html>
         <head>
         <meta name="viewport" content="width=device-width, initial-scale=1">
-        <style> body { font-size: 150%; } </style>
+        <style>
+        body {
+            padding: 25px;
+            font-size: 150%;
+        }
+        </style>
         </head>
         <body>
-        \(detailItem.body)
+        \(detailItem.body.isEmpty ? detailItem.title : detailItem.body)
         </body>
         </html>
         """
