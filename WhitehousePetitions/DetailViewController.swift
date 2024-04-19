@@ -37,6 +37,10 @@ class DetailViewController: UIViewController {
         </style>
         </head>
         <body>
+        Signature count: \(detailItem.signatureCount)
+        <br>
+        Deadline: \(detailItem.deadlineDate.formatted(date: .abbreviated, time: .omitted))
+        <br><br>
         \(detailItem.body.isEmpty ? detailItem.title : detailItem.body)
         </body>
         </html>

@@ -9,28 +9,31 @@ import UIKit
 
 class ViewController: UITableViewController {
     var petitions = [Petition]()
+    let searchBarController = UISearchController(searchResultsController: nil)
+    var filteredData = [Petition]()
+    
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        title = "Whitehouse Petitions"
-        navigationController?.navigationBar.prefersLargeTitles = true
-        
+        setupNavBar()
         loadData()
+        setSearchBarUI()
+        getFilteredData()
     }
 
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        petitions.count
+        filteredData.count
     }
     
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         let vc = DetailViewController()
-        vc.detailItem = petitions[indexPath.row]
+        vc.detailItem = filteredData[indexPath.row]
         navigationController?.pushViewController(vc, animated: true)
     }
     
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "Cell", for: indexPath)
-        let petition = petitions[indexPath.row]
+        let petition = filteredData[indexPath.row]
         
         var content = cell.defaultContentConfiguration()
         content.textProperties.numberOfLines = 1
@@ -74,5 +77,61 @@ class ViewController: UITableViewController {
         ac.addAction(UIAlertAction(title: "OK", style: .default))
         present(ac, animated: true)
     }
+    
+    func setupNavBar() {
+        title = "Whitehouse Petitions"
+        navigationController?.navigationBar.prefersLargeTitles = true
+
+        let creditsButton = UIBarButtonItem(
+            image: UIImage(systemName: "info.circle"),
+            style: .plain,
+            target: self,
+            action: #selector(onTapCredits)
+        )
+        navigationItem.rightBarButtonItem = creditsButton
+    }
+    
+    @objc func onTapCredits() {
+        let ac = UIAlertController(
+            title: "Credits",
+            message: "The data for this app comes from the We The People API of the Whitehouse",
+            preferredStyle: .alert
+        )
+        ac.addAction(UIAlertAction(title: "OK", style: .default))
+        present(ac, animated: true)
+    }
 }
 
+
+
+extension ViewController: UISearchBarDelegate {
+    func setSearchBarUI() {
+        searchBarController.searchBar.delegate = self
+        searchBarController.obscuresBackgroundDuringPresentation = false
+        searchBarController.searchBar.sizeToFit()
+        navigationItem.searchController = searchBarController
+    }
+    
+    func getFilteredData(searchedText: String = String()) {
+        let filteredListData: [Petition] = petitions.filter({ (object) -> Bool in
+            searchedText.isEmpty ? true : object.title.lowercased().contains(searchedText.lowercased())
+        })
+        filteredData = filteredListData
+        tableView.reloadData()
+    }
+    
+    func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
+        getFilteredData(searchedText: searchBar.text ?? String())
+    }
+    
+    func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
+        searchBar.endEditing(true)
+    }
+    
+    func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
+        searchBar.endEditing(true)
+        searchBar.text = String()
+        getFilteredData()
+    }
+    
+}

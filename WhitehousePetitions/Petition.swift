@@ -11,4 +11,11 @@ struct Petition: Codable {
     var title: String
     var body: String
     var signatureCount: Int
+    var deadline: Double
+}
+
+extension Petition {
+    var deadlineDate: Date {
+        Date(timeIntervalSince1970: deadline)
+    }
 }
