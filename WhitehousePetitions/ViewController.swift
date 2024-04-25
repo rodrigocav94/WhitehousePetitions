@@ -18,7 +18,6 @@ class ViewController: UITableViewController {
         setupNavBar()
         loadData()
         setSearchBarUI()
-        getFilteredData()
     }
 
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
@@ -61,9 +60,9 @@ class ViewController: UITableViewController {
                     return
                 }
             }
+            
+            self.showError()
         }
-        
-        showError()
     }
     
     func parse(json: Data) {
@@ -71,14 +70,18 @@ class ViewController: UITableViewController {
         
         if let jsonPetitions = try? decoder.decode(Petitions.self, from: json) {
             petitions = jsonPetitions.results
-            self.tableView.reloadData()
+            DispatchQueue.main.async {
+                self.getFilteredData()
+            }
         }
     }
     
     func showError() {
-        let ac = UIAlertController(title: "Loading error", message: "There was a problem loading the feed; please check your connection and try again.", preferredStyle: .alert)
-        ac.addAction(UIAlertAction(title: "OK", style: .default))
-        present(ac, animated: true)
+        DispatchQueue.main.async {
+            let ac = UIAlertController(title: "Loading error", message: "There was a problem loading the feed; please check your connection and try again.", preferredStyle: .alert)
+            ac.addAction(UIAlertAction(title: "OK", style: .default))
+            self.present(ac, animated: true)
+        }
     }
     
     func setupNavBar() {
