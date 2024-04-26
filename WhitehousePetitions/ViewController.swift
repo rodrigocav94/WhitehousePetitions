@@ -113,11 +113,15 @@ extension ViewController: UISearchBarDelegate {
     }
     
     @objc func getFilteredData(searchedText: String = String()) {
-        let filteredListData: [Petition] = petitions.filter({ (object) -> Bool in
-            searchedText.isEmpty ? true : object.title.lowercased().contains(searchedText.lowercased())
-        })
-        filteredData = filteredListData
-        tableView.reloadData()
+        DispatchQueue.global(qos: .userInteractive).async {
+            let filteredListData: [Petition] = self.petitions.filter({ (object) -> Bool in
+                searchedText.isEmpty ? true : object.title.lowercased().contains(searchedText.lowercased())
+            })
+            DispatchQueue.main.async {
+                self.filteredData = filteredListData
+                self.tableView.reloadData()
+            }
+        }
     }
     
     func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
